@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://xmlns.jcp.org/jsf/html"
+	xmlns:f="http://xmlns.jcp.org/jsf/core"
+	xmlns:p="http://primefaces.org/ui">
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+	<title>Clientes</title>
+</h:head>
+<h:body>
+
+	<p:growl id="mensagem" />
+	<h:form id="formListagem">
+		<p:panel header="Clientes - Listagem">
+			<p:dataTable id="tabela" emptyMessage="Nenhum registro encontrado."
+				paginator="true" rows="10" value="#{MBCliente.listCliente}"
+				var="cliente">
+				<f:facet name="footer">
+					<p:commandButton value="Novo" oncomplete="PF('dialogo').show();"
+						actionListener="#{MBCliente.novo}" update=":formCadastro">
+						<f:actionListener
+							type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+					</p:commandButton>
+				</f:facet>
+				<p:column headerText="Nome" sortBy="#{cliente.id}"
+					filterBy="#{cliente.id}">
+					<h:outputText value="#{cliente.id}" />
+				</p:column>
+				<p:column headerText="Nome" sortBy="#{cliente.nome}"
+					filterBy="#{cliente.nome}">
+					<h:outputText value="#{cliente.nome}" />
+				</p:column>
+				<p:column headerText="CPF" sortBy="#{cliente.cpf}"
+					filterBy="#{cliente.cpf}">
+					<h:outputText value="#{cliente.cpf}" />
+				</p:column>
+				<p:column headerText="Opções">
+					<p:commandButton icon="ui-icon-trash"
+						actionListener="#{MBCliente.excluir}"
+						update=":mensagem :formListagem:tabela">
+						<p:confirm header="Confirmação"
+							message="Deseja excluir o cliente ?" icon="ui-icon-alert" />
+						<f:attribute name="clienteSelecionado" value="#{cliente}" />
+					</p:commandButton>
+					<p:commandButton icon="ui-icon-pencil"
+						actionListener="#{MBCliente.editar}" update=":formCadastro"
+						oncomplete="PF('dialogo').show();">
+						<f:attribute name="clienteSelecionado" value="#{cliente}" />
+						<f:actionListener
+							type="org.omnifaces.eventlistener.ResetInputAjaxActionListener" />
+					</p:commandButton>
+				</p:column>
+			</p:dataTable>
+			<p:confirmDialog global="true">
+				<p:commandButton value="Sim" type="button"
+					styleClass="ui-confirmdialog-yes" icon="ui-icon-check" />
+				<p:commandButton value="Não" type="button"
+					styleClass="ui-confirmdialog-no" icon="ui-icon-close" />
+			</p:confirmDialog>
+		</p:panel>
+	</h:form>
+	<p:dialog header="Cliente - Cadastro" widgetVar="dialogo"
+		draggable="false" resizable="false" modal="true">
+		<p:ajax event="close"
+			oncomplete="PF('wiz').loadStep(PF('wiz').cfg.steps [0], true)" />
+		<h:form id="formCadastro">
+
+			<p:wizard widgetVar="wiz">
+				<p:tab id="pessoal" title="Pessoal">
+					<p:panel header="Dados Pessoais">
+						<p:messages />
+						<h:panelGrid columns="2" columnClasses="label, value">
+							<p:outputLabel value="Código:" />
+
+							<p:outputLabel value="#{MBCliente.cliente.id}" />
+
+							<p:outputLabel for="nome" value="Nome:" />
+
+							<p:inputText id="nome" value="#{MBCliente.cliente.nome}"
+								required="true" requiredMessage="O campo nome é obrigatório."
+								size="100" maxlength="50" />
+
+							<p:outputLabel for="cpf" value="CPF:" />
+
+							<p:inputMask mask="999.999.999-99" id="cpf"
+								value="#{MBCliente.cliente.cpf}" required="true"
+								requiredMessage="O campo CPF é obrigatório." />
+
+							<p:outputLabel value="RG:" />
+
+							<p:inputText value="#{MBCliente.cliente.rg}" size="20"
+								maxlength="18" />
+
+						</h:panelGrid>
+					</p:panel>
+				</p:tab>
+				<p:tab id="endereco" title="Endereco">
+					<p:panel header="Endereço Detalhes">
+						<p:messages />
+						<h:panelGrid columns="2" columnClasses="label, value">
+
+							<p:outputLabel value="Endereço:" />
+							<p:inputText value="#{MBCliente.cliente.endereco}" size="100"
+								maxlength="50" />
+							<p:outputLabel value="Número:" />
+							<p:inputText value="#{MBCliente.cliente.numero}" size="10"
+								maxlength="8" />
+							<p:outputLabel value="Complemento:" />
+							<p:inputText value="#{MBCliente.cliente.complemento}" size="30"
+								maxlength="30" />
+							<p:outputLabel value="Cidade:" />
+							<p:inputText value="#{MBCliente.cliente.cidade}" size="50"
+								maxlength="50" />
+							<p:outputLabel value="Estado:" />
+							<p:inputText value="#{MBCliente.cliente.estado}" size="3"
+								maxlength="2" />
+						</h:panelGrid>
+					</p:panel>
+				</p:tab>
+				<p:tab id="contato" title="Contato">
+					<p:panel header="Meios de Contato">
+						<p:messages />
+						<h:panelGrid columns="2" columnClasses="label, value">
+
+							<p:outputLabel value="Telefone:" />
+							<p:inputMask mask="(99)9999-9999"
+								value="#{MBCliente.cliente.telefone}" />
+							<p:outputLabel value="Celular:" />
+							<p:inputMask mask="(99)99999-9999"
+								value="#{MBCliente.cliente.celular}" />
+							<p:outputLabel value="Email:" />
+							<p:inputText value="#{MBCliente.cliente.email}" size="100"
+								maxlength="80" />
+						</h:panelGrid>
+					</p:panel>
+				</p:tab>
+				<p:tab id="confirmar" title="Confirmação">
+					<p:panel header="Confirmação dos dados">
+						<h:panelGrid id="confirmation" columns="3"
+							columnClasses="grid,grid,grid">
+							<h:panelGrid columns="2" columnClasses="label, value">
+								<p:outputLabel value="Código:" />
+								<p:outputLabel value="#{MBCliente.cliente.id}" />
+
+								<p:outputLabel value="Nome:" />
+								<p:outputLabel value="#{MBCliente.cliente.nome}" />
+
+								<p:outputLabel for="cpf" value="CPF:" />
+								<p:outputLabel value="#{MBCliente.cliente.cpf}" required="true" />
+
+								<p:outputLabel value="RG:" />
+								<p:outputLabel value="#{MBCliente.cliente.rg}" />
+
+							</h:panelGrid>
+
+							<h:panelGrid columns="2" columnClasses="label, value">
+								<p:outputLabel value="Endereço:" />
+								<p:outputLabel value="#{MBCliente.cliente.endereco}" />
+
+								<p:outputLabel value="Número:" />
+								<p:outputLabel value="#{MBCliente.cliente.numero}" />
+
+								<p:outputLabel value="Complemento:" />
+								<p:outputLabel value="#{MBCliente.cliente.complemento}" />
+
+								<p:outputLabel value="Cidade:" />
+								<p:outputLabel value="#{MBCliente.cliente.cidade}" />
+
+								<p:outputLabel value="Estado:" />
+								<p:outputLabel value="#{MBCliente.cliente.estado}" />
+							</h:panelGrid>
+
+							<h:panelGrid columns="2" columnClasses="label, value">
+								<p:outputLabel value="Telefone:" />
+								<p:outputLabel value="#{MBCliente.cliente.telefone}" />
+
+								<p:outputLabel value="Celular:" />
+								<p:outputLabel value="#{MBCliente.cliente.celular}" />
+
+								<p:outputLabel value="Email:" />
+								<p:outputLabel value="#{MBCliente.cliente.email}" />
+								<h:outputText />
+								<h:outputText />
+							</h:panelGrid>
+						</h:panelGrid>
+						<p:commandButton value="Salvar"
+							actionListener="#{MBCliente.salvar}"
+							update=":formListagem:tabela :formCadastro :formCadastro :mensagem" oncomplete="PF('dialogo').hide();">
+						</p:commandButton>
+					</p:panel>
+				</p:tab>
+			</p:wizard>
+
+		</h:form>
+	</p:dialog>
+</h:body>
+</html>
